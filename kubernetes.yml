@@ -1,5 +1,5 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: helloworld-service
 spec:
@@ -8,8 +8,8 @@ spec:
     app: helloworldapp
   ports:
     - protocol: TCP
-      port: 8000
-      nodePort: 8000
+      port: 8090
+      targetPort: 8000
 
 ---
 
@@ -20,7 +20,7 @@ metadata:
   labels:
     app: helloworldapp
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: helloworldapp
@@ -33,4 +33,4 @@ spec:
       - name: helloworldapp
         image: $dockerImage
         ports:
-        - containerPort: 80
+        - containerPort: 8000
