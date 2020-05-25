@@ -20,7 +20,7 @@ metadata:
   labels:
     app: helloworldapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: helloworldapp
@@ -31,6 +31,6 @@ spec:
     spec:
       containers:
       - name: helloworldapp
-        image: $dockerImage
+        image: $dockerImage:$BUILD_NUMBER
         ports:
         - containerPort: 8000
