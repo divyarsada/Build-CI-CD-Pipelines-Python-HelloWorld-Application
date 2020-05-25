@@ -38,5 +38,19 @@ pipeline {
                 }
             }
         }
+        stage('DeployToKubernetesCluster') {
+            when {
+                branch 'master'
+            }
+            steps {
+                input 'Deploy to Cluster?'
+                milestone(1)
+                kubernetesDeploy(
+                    kubeconfigId: 'kubeconfig',
+                    configs: 'kubernetes.yml',
+                    enableConfigSubstitution: true
+                )
+            }
+        }
     } 
 }
