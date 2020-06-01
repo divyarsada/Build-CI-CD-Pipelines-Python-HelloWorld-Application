@@ -38,6 +38,18 @@ pipeline {
                 }
             }
         }
+        stage('Set current kubectl context') {
+            when {
+                branch 'master'
+            }
+            steps {
+                script {
+                    sh 'kubectl config --kubeconfig=kubeconfig use-context kubernetes-admin'
+                    }
+                }
+            }
+        }
+            
         stage('DeployToKubernetesCluster') {
             when {
                 branch 'master'
