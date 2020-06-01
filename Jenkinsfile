@@ -40,9 +40,8 @@ pipeline {
         }
         stage('Set current kubectl context') {
             steps {
-              withCredentials([kubeconfigFile(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                sh 'kubectl config use-context kops.cluster.kubernetes-aws.io'
-                sh '''cat $KUBECONFIG'''
+               sh 'export KUBECONFIG=~/.kube/config'
+               #sh 'kops export kubecfg --name  --config=~$KUBECONFIG'
               }
             }
         }
