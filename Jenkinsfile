@@ -40,8 +40,10 @@ pipeline {
         }
         stage('Set current kubectl context') {
             steps {
-                su ec2-user
-                sh 'kubectl config use-context kops.cluster.kubernetes-aws.io'
+                sh '''
+                    su ec2-user
+                    kubectl config use-context kops.cluster.kubernetes-aws.io
+                '''
             }
         }
             
