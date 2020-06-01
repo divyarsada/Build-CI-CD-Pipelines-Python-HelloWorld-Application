@@ -40,8 +40,8 @@ pipeline {
         }
         stage('Set current kubectl context') {
             steps {
-               withKubeConfig(credentials='kubeconfig', serverUrl: 'https://api.kops.cluster.kubernetes-aws.io') {
-                   sh 'kubectl config use-context kops.cluster.kubernetes-aws.io'
+               withKubeConfig([credentialsId='kubeconfig', serverUrl: 'https://api.kops.cluster.kubernetes-aws.io']) {
+                  sh 'kubectl config use-context kops.cluster.kubernetes-aws.io'
                 }
             }
         }
