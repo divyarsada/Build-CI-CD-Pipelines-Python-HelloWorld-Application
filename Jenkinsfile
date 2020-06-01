@@ -43,10 +43,8 @@ pipeline {
                 branch 'master'
             }
             steps {
-                script {
-                    sh 'kubectl config --kubeconfig=kubeconfig use-context kubernetes-admin'
-                    }
-                }
+                sh 'kubectl config --kubeconfig=kubeconfig use-context kubernetes-admin'
+                    
             }
         }
             
