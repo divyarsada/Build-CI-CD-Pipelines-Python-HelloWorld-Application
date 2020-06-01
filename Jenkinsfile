@@ -41,8 +41,6 @@ pipeline {
         stage('Set current kubectl context') {
             steps {
                sh 'export KUBECONFIG=~/.kube/config'
-               #sh 'kops export kubecfg --name  --config=~$KUBECONFIG'
-              }
             }
         }
             
