@@ -39,12 +39,9 @@ pipeline {
             }
         }
         stage('Set current kubectl context') {
-            when {
-                branch 'master'
-            }
             steps {
-                sh 'kubectl config --kubeconfig=kubeconfig use-context kubernetes-admin'
-                    
+                su ec2-user
+                sh 'kubectl config use-context kops.cluster.kubernetes-aws.io'
             }
         }
             
