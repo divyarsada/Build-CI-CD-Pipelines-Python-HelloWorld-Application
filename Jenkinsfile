@@ -50,7 +50,9 @@ pipeline {
             }
             steps {
                 sh '''#!/bin/bash
-
+                    echo "$whoami"
+                    echo "$pwd"
+                    sh "cd /home/ec2-user/"
                     echo "Hello from bash"
                     echo "Who I'm $SHELL"
                     echo 'Check if Pod has Previously been Deployed'
