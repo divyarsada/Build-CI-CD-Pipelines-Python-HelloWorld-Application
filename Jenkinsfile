@@ -41,6 +41,7 @@ pipeline {
         stage('Set current kubectl context') {
             steps {
                sh 'export KUBECONFIG=~/.kube/config'
+               sh 'kubectl config view'
             }
         }
             
@@ -49,14 +50,27 @@ pipeline {
                 branch 'master'
             }
             steps {
-                input 'Deploy to Cluster?'
-                milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'kubernetes.yml',
-                    enableConfigSubstitution: true
-                )
+                bash '''#!/bin/bash
+                    echo 'Check if Pod has Previously been Deployed'
+                    podName=`kubectl get pods --field-selector status.phase=Running`
+                    echo $podName
+                    if [ -z "$podName" ]
+                    then
+                        echo 'No Pod Found, Deploying Now'
+                        input 'Deploy to Cluster?'
+                        milestone(1)
+                        kubernetesDeploy(
+                            kubeconfigId: 'kubeconfig',
+                            configs: 'kubernetes.yml',
+                            enableConfigSubstitution: true
+                        )
+                    else
+                        echo 'pods alreay deployed"
+                    fi
+                '''
             }
+            
         }
+        
     } 
 }
