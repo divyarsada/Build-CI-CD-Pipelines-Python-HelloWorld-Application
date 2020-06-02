@@ -35,6 +35,3 @@ spec:
         image: $dockerImage:$BUILD_NUMBER
         ports:
         - containerPort: 8000
-      strategy:
-        type: RollingUpdate
-        rollingUp maxSurge: 50%
