@@ -49,7 +49,10 @@ pipeline {
                 branch 'master'
             }
             steps {
-                bash '''#!/bin/bash
+                sh '''#!/bin/bash
+
+                    echo "Hello from bash"
+                    echo "Who I'm $SHELL"
                     echo 'Check if Pod has Previously been Deployed'
                     podName=`kubectl get pods --field-selector status.phase=Running`
                     echo $podName
