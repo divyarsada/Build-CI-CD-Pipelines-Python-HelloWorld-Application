@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: helloworld-service
 spec:
-  type: LaodBalancer
+  type: LoadBalancer
   selector:
     app: helloworldapp
   ports:
