@@ -49,7 +49,8 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh './rolling-update.sh'
+                sh "pwd"
+                sh '$WORKSPACE/rolling-update.sh'
             }
             
         }
