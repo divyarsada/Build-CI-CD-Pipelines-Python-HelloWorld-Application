@@ -57,7 +57,7 @@ pipeline {
 			script {
 				sh "echo 'Check if Pod has Previously been Deployed'"
 				script {
-					podName = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$ecrRepoName\").metadata.name'", returnStdout: true).trim()
+					podName = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
 				}
 				if (podName.isEmpty()) {
 					sh "echo 'No Pod Found, Deploying Now'"
