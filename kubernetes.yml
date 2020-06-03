@@ -37,6 +37,6 @@ spec:
     spec:
       containers:
       - name: helloworldapp
-        image: $dockerImage:$BUILD_NUMBER
+        image: $(dockerImage):$(BUILD_NUMBER)
         ports:
         - containerPort: 8000
