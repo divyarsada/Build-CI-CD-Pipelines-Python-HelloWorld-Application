@@ -60,7 +60,7 @@ pipeline {
 				}
 				if (deploymentName.isEmpty()) {
 					sh "echo 'No deployments Found, Deploying Now'"
-					sh "~/bin/kubectl annotate --overwrite -f `echo $WORKSPACE/kubernetes.yml` image=`echo $dockerImage`:`echo $BUID_NUMBER`"
+					sh "~/bin/kubectl annotate --overwrite -f `echo $WORKSPACE/kubernetes.yml` image=`echo $dockerImage`:`echo $BUILD_NUMBER`"
 					sh "~/bin/kubectl apply -f `echo $WORKSPACE/kubernetes.yml` "
 					script {
 						sh "echo 'Getting deployment Name'"
@@ -68,7 +68,7 @@ pipeline {
 					}
 				} else {
 					sh "echo 'Application Already Deployed, Updating Image'"
-					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUID_NUMBER`"
+					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUILD_NUMBER`"
 					sh "echo 'Restart deployment to Clear Cache'"
 					sh "~/bin/kubectl rollout status deployment/$repoName"
 					sh "echo 'Retrieving New Pod Name and Hash'"
