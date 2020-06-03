@@ -1,14 +1,15 @@
-// Global Variable for Retaining a Constant Build ID
-def buildID = ""
+// Global Variables
+def clusterName = 'kops.cluster.kubernetes-aws.io'
 def dockerImageID = 'sampletest19/helloworldpipeline'
 def registry = "sampletest19/helloworldpipeline"
-def repoName = "helloworld-deployment-rolling-update"
+def deploymentName = "helloworld-deployment-rolling-update"
 def serviceName = "helloworld-service"
 def podHash = ""
 def podName = ""
 def serviceAddress = ""
 def registryCredential = 'docker_hub_login'
 def dockerImage = 'sampletest19/helloworldpipeline'
+def rolloutStatus = ""
 pipeline {
   agent any
   stages {
@@ -48,38 +49,44 @@ pipeline {
 
 	stage('Set current kubectl context') {
             steps {
-               sh 'export KUBECONFIG=~/.kube/config'
+                script{
+                    sh 'export KUBECONFIG=~/.kube/config'
+                    sh "~bin/kubectl config use-context=`echo $clusterName`"
+                }
             }
     }
 	stage('Deploy Kubernetes Cluster') {
 		steps {
 			script {
-				sh "echo 'Check if app has Previously been Deployed'"
+				sh "echo 'Check if app has been deployed'"
 				script {
-					deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
+					deploymentStatus = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$deploymentName\").metadata.name'", returnStdout: true).trim()
 				}
-				if (deploymentName.isEmpty()) {
-					sh "echo 'No deployments Found, Deploying Now'"
-					sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImageID`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
-					sh "~/bin/kubectl expose deployment $repoName --port=8090 --target-port=8000 --type=LoadBalancer"
+				if (deploymentStatus.isEmpty()) {
+					sh "echo 'No deployments found, deploying now'"
+					sh "~/bin/kubectl run `echo $deploymentName` --image=`echo $dockerImageID`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
+					sh "~/bin/kubectl expose service $serviceName --port=8090 --target-port=8000 --type=LoadBalancer"
 					script {
-						sh "echo 'Getting deployment Name'"
+						sh "echo 'Getting service name Name'"
 						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
 					}
+					sh "echo 'Successfully created deployment $deploymentName and exposed the service $serviceName on port 8090'
 				} else {
-					sh "echo 'Application Already Deployed, Updating Image'"
-					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImageID`:`echo $BUILD_NUMBER`"
-					sh "echo 'Restart deployment to Clear Cache'"
-					sh "~/bin/kubectl rollout status deployment/$repoName"
-					sh "echo 'Retrieving New Pod Name and Hash'"
+					sh "echo 'Application Already Deployed, updating the deployment applying Rolling update deployment strategy'"
+					sh "~/bin/kubectl set image deployment/`echo $deploymentName` `echo $deploymentName`=`echo $dockerImageID`:`echo $BUILD_NUMBER`"
 					script {
+					    sh "echo 'Fetching the Rollout status........'"
+					    rolloutStatus=sh(script("~/bin/kubectl rollout status deployment/$deploymentName"))
+						sh "echo 'Retrieving New Pod Name and Hash'"
 						podName = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.name'", returnStdout: true).trim()
 						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
 						serviceAddress = sh(script: "~/bin/kubectl get services --output=json | jq -r '.items[0] | .status.loadBalancer.ingress[0].hostname'", returnStdout: true).trim()
 					}
-				} 
+					sh "echo 'Rollout status: $rolloutStatus'"
+					sh "echo 'Currently running pods:$podName,$podHash'"
+				}
 				sh "echo 'Deployment Complete!'"
-				sh "echo 'View Page Here (Please Allow a Minute for Services to Refresh): http://$serviceAddress:8090'"
+				sh "echo 'View  (Please Allow a Minute for Services to Refresh): http://$serviceAddress:8090'"
 			}
 		}
 	}
