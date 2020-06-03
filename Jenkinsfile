@@ -75,7 +75,7 @@ pipeline {
 					sh "~/bin/kubectl set image deployment/`echo $deploymentName` `echo $deploymentName`=`echo $dockerImageID`:`echo $BUILD_NUMBER`"
 					script {
 					    sh "echo 'Fetching the Rollout status........'"
-					    rolloutStatus=sh(script("~/bin/kubectl rollout status deployment/$deploymentName"))
+					    rolloutStatus = sh(script: "~/bin/kubectl rollout status deployment/$deploymentName")
 						sh "echo 'Retrieving New Pod Name and Hash'"
 						podName = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.name'", returnStdout: true).trim()
 						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
