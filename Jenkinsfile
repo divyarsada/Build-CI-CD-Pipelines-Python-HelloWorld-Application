@@ -50,7 +50,10 @@ pipeline {
             }
             steps {
                 sh "pwd"
-                sh '$WORKSPACE/rolling-update.sh'
+                sh "whoami"
+                sh 'chmod +x ./rolling-update.sh'
+                sh './rolling-update.sh'
+                    
             }
             
         }
