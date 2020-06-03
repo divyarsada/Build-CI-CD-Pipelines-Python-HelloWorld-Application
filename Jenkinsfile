@@ -8,7 +8,7 @@ def podHash = ""
 def podName = ""
 def serviceAddress = ""
 def registryCredential = 'docker_hub_login'
-dockerImage = 'sampletest19/helloworldpipeline'
+def dockerImage = 'sampletest19/helloworldpipeline'
 
 pipeline {
   agent any
