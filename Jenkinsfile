@@ -9,7 +9,6 @@ def podName = ""
 def serviceAddress = ""
 def registryCredential = 'docker_hub_login'
 def dockerImage = 'sampletest19/helloworldpipeline'
-def appName=
 pipeline {
   agent any
   stages {
@@ -55,9 +54,9 @@ pipeline {
 	stage('Deploy Kubernetes Cluster') {
 		steps {
 			script {
-				sh "echo 'Check if Pod has Previously been Deployed'"
+				sh "echo 'Check if app has Previously been Deployed'"
 				script {
-					podName = sh(script: "~/bin/kubectl get pods")
+					podName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()")
 				}
 				if (podName.isEmpty()) {
 					sh "echo 'No Pod Found, Deploying Now'"
@@ -65,22 +64,23 @@ pipeline {
 					#sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImage`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
 					script {
 						sh "echo 'Getting Pod Name and Hash'"
-						podName = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$appName*\").metadata.name'", returnStdout: true).trim()
-						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$appName\").metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
+						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
 					}
 				} else {
 					sh "echo 'Pod Already Deployed, Updating Image'"
-					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUILD_NUMBER`"
+					sh "~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
+					#sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUILD_NUMBER`"
 					sh "echo 'Restart Pod to Clear Cache'"
 					sh "~/bin/kubectl rollout restart deployment/$repoName"
 					sh "echo 'Retrieving New Pod Name and Hash'"
 					script {
 						podName = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.name'", returnStdout: true).trim()
 						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
+						serviceAddress = sh(script: "~/bin/kubectl get services --output=json | jq -r '.items[0] | .status.loadBalancer.ingress[0].hostname'", returnStdout: true).trim()
 					}
 				} 
 				sh "echo 'Deployment Complete!'"
-				sh "echo 'View Page Here (Please Allow a Minute for Services to Refresh): http://$serviceAddress:8080'"
+				sh "echo 'View Page Here (Please Allow a Minute for Services to Refresh): http://$serviceAddress:8090'"
 			}
 		}
 	}
