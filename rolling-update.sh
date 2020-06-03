@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 echo 'Check if Pod has Previously been Deployed'
-
+echo 
 podName=`~/bin/kubectl get pods --field-selector status.phase=Running`
 echo $podName
 if [ -z "$podName" ]
@@ -15,6 +15,7 @@ then
 else
     #statements
     echo 'pods already deployed'
+    echo "$image"
     ~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
 	echo 'Restart Pod to Clear Cache'
 	~/bin/kubectl rollout status
