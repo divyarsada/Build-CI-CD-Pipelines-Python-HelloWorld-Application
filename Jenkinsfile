@@ -22,7 +22,7 @@ pipeline {
             }
             steps {
                 script {
-                    def appImage = docker.build registry + ":$BUILD_NUMBER"
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
@@ -33,8 +33,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-                        appImage.push()
-                        appImage.push('latest')
+                        dockerImage.push()
+                        dockerImage.push('latest')
                     }
                 }
             }
