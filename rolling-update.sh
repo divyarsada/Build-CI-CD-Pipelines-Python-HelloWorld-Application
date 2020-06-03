@@ -2,7 +2,7 @@
 set -e
 echo 'Check if Pod has Previously been Deployed'
 
-podName=`kubectl get pods --field-selector status.phase=Running`
+podName=`~/bin/kubectl get pods --field-selector status.phase=Running`
 echo $podName
 if [ -z "$podName" ]
 then
