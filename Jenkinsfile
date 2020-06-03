@@ -69,7 +69,6 @@ pipeline {
 				} else {
 					sh "echo 'Pod Already Deployed, Updating Image'"
 					sh "~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
-					#sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUILD_NUMBER`"
 					sh "echo 'Restart Pod to Clear Cache'"
 					sh "~/bin/kubectl rollout restart deployment/$repoName"
 					sh "echo 'Retrieving New Pod Name and Hash'"
