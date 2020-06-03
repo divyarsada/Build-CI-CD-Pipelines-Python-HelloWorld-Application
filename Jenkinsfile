@@ -58,7 +58,7 @@ pipeline {
                     sh 'chmod +x ./rolling-update.sh'
                     sh './rolling-update.sh'
                 }
-            
+            }
         }
         
     } 
