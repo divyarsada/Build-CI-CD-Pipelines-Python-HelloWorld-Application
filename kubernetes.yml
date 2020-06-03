@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
       - name: helloworldapp
-        image: sampletest19/helloworldpipeline:$BUILD_NUMBER
+        image: sampletest19/helloworldpipeline:latest
         imagePullSecrets:
         ports:
         - containerPort: 8000
