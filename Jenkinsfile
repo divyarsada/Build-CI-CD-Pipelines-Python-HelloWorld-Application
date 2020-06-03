@@ -49,7 +49,7 @@ pipeline {
 
 	stage('Set current kubectl context') {
             steps {
-                 sh 'export KUBECONFIG=~/.kube/config'
+                sh 'export KUBECONFIG=~/.kube/config'
             }
     }
 	stage('Deploy Kubernetes Cluster') {
