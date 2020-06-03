@@ -13,15 +13,6 @@ dockerImage = 'sampletest19/helloworldpipeline'
 pipeline {
   agent any
   stages {
-	stage('Setup Global Parameters'){
-		steps {
-			sh "echo 'Getting Timestamp'"
-			script {
-				buildID = sh(script: 'echo `date +%Y-%m-%dT%H.%M.%S`', returnStdout: true).trim()
-			}
-			sh "echo 'Build ID: $buildID, registry: $registry'"					
-		}
-	}
 	stage('Build') {
         steps {
             sh 'make install'
@@ -52,6 +43,7 @@ pipeline {
                 docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
                      dockerImage.push()
                      dockerImage.push(latest)
+                }    
 			}
 		}
 	}
