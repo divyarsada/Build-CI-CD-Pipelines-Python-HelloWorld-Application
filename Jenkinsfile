@@ -1,6 +1,6 @@
 // Global Variable for Retaining a Constant Build ID
 def buildID = ""
-def dockerImageID = ""
+def dockerImageID = 'sampletest19/helloworldpipeline'
 def registry = "sampletest19/helloworldpipeline"
 def repoName = "helloworld-deployment-rolling-update"
 def serviceName = "helloworld-service"
@@ -60,8 +60,8 @@ pipeline {
 				}
 				if (deploymentName.isEmpty()) {
 					sh "echo 'No deployments Found, Deploying Now'"
-					sh "~/bin/kubectl annotate --overwrite -f `echo $WORKSPACE/kubernetes.yml` image=`echo $dockerImage`:`echo $BUILD_NUMBER`"
-					sh "~/bin/kubectl apply -f `echo $WORKSPACE/kubernetes.yml` "
+					sh "~/bin/kubectl run `echo $repoName` --image= `echo $dockerImageID`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
+					sh "~/bin/kubectl expose deployment $repoName --port=8000 --target-port=8090 --type=LoadBalancer"
 					script {
 						sh "echo 'Getting deployment Name'"
 						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
