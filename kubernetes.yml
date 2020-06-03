@@ -38,6 +38,5 @@ spec:
       containers:
       - name: helloworldapp
         image: sampletest19/helloworldpipeline:latest
-        imagePullSecrets:
         ports:
         - containerPort: 8000
