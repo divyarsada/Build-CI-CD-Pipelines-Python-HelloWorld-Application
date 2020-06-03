@@ -22,7 +22,7 @@ pipeline {
             }
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                    def appImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
@@ -33,7 +33,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-                    dockerImage.push()
+                        appImage.push()
+                        appImage.push('latest')
                     }
                 }
             }
@@ -49,12 +50,14 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh "pwd"
-                sh "whoami"
-                sh 'chmod +x ./rolling-update.sh'
-                sh './rolling-update.sh'
-                    
-            }
+                script{
+                    def image_id = registry + ":$BUILD_NUMBER"
+                    echo "$image_id"
+                    sh "pwd"
+                    sh "whoami"
+                    sh 'chmod +x ./rolling-update.sh'
+                    sh './rolling-update.sh'
+                }
             
         }
         

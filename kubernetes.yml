@@ -24,7 +24,7 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
+      maxSurge: 25%
       maxUnavailable: 25%
   selector:
     matchLabels:
@@ -37,6 +37,7 @@ spec:
     spec:
       containers:
       - name: helloworldapp
-        image: $dockerImage:$BUILD_NUMBER
+        image: sampletest19/helloworldpipeline:latest
+        imagePullSecrets:
         ports:
         - containerPort: 8000
