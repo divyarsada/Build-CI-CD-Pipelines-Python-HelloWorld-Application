@@ -1,5 +1,4 @@
 from flask import Flask
-from flask import array
 
 app = Flask(__name__)
 
