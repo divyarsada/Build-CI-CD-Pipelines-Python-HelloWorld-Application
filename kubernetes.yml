@@ -40,11 +40,3 @@ spec:
         image: $dockerImage:$BUILD_NUMBER
         ports:
         - containerPort: 8000
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8000
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            successThreshold: 1
-             
