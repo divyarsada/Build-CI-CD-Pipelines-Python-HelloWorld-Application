@@ -61,7 +61,7 @@ pipeline {
 				}
 				if (podName.isEmpty()) {
 					sh "echo 'No Pod Found, Deploying Now'"
-					~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
+					sh "~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
 					#sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImage`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
 					script {
 						sh "echo 'Getting Pod Name and Hash'"
