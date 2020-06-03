@@ -21,8 +21,8 @@ else
 	~/bin/kubectl rollout status deployments/helloworld-deployment-rolling-update
 	echo 'Retrieving New Pod'
 	podName = `~/bin/kubectl get pods`
-    echo $podName
+    echo "$podName"
     echo 'Get services'
     services = `~/bin/kubectl get services`
-    echo $services
+    echo "$services"
 fi
