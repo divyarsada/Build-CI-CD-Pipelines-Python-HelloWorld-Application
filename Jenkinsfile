@@ -70,7 +70,7 @@ pipeline {
 						sh "echo 'Getting service name Name'"
 						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
 					}
-					sh "echo 'Successfully created deployment $deploymentName and exposed the service $serviceName on port 8090'
+					sh "echo 'Successfully created deployment $deploymentName and exposed the service $serviceName on port 8090'"
 				} else {
 					sh "echo 'Application Already Deployed, updating the deployment applying Rolling update deployment strategy'"
 					sh "~/bin/kubectl set image deployment/`echo $deploymentName` `echo $deploymentName`=`echo $dockerImageID`:`echo $BUILD_NUMBER`"
