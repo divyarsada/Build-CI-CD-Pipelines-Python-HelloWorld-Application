@@ -37,6 +37,6 @@ spec:
     spec:
       containers:
       - name: helloworldapp
-        image: sampletest19/helloworldpipeline:latest
+        image: $dockerImage:$BUILD_NUMBER
         ports:
         - containerPort: 8000
