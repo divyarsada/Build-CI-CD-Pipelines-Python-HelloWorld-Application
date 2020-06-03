@@ -9,7 +9,7 @@ def podName = ""
 def serviceAddress = ""
 def registryCredential = 'docker_hub_login'
 def dockerImage = 'sampletest19/helloworldpipeline'
-
+def appName=
 pipeline {
   agent any
   stages {
@@ -57,15 +57,16 @@ pipeline {
 			script {
 				sh "echo 'Check if Pod has Previously been Deployed'"
 				script {
-					podName = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
+					podName = sh(script: "~/bin/kubectl get pods")
 				}
 				if (podName.isEmpty()) {
 					sh "echo 'No Pod Found, Deploying Now'"
-					sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImage`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
+					~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
+					#sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImage`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
 					script {
 						sh "echo 'Getting Pod Name and Hash'"
-						podName = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
-						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
+						podName = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$appName*\").metadata.name'", returnStdout: true).trim()
+						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$appName\").metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
 					}
 				} else {
 					sh "echo 'Pod Already Deployed, Updating Image'"
