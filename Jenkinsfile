@@ -60,7 +60,8 @@ pipeline {
 				}
 				if (deploymentName.isEmpty()) {
 					sh "echo 'No deployments Found, Deploying Now'"
-					sh "~/bin/kubectl apply -f `echo $WORKSPACE/kubernetes.yml`"
+					sh "~/bin/kubectl annotate --overwrite -f `echo $WORKSPACE/kubernetes.yml` image=`echo $dockerImage`:`echo $BUID_NUMBER`"
+					sh "~/bin/kubectl apply -f `echo $WORKSPACE/kubernetes.yml` "
 					script {
 						sh "echo 'Getting deployment Name'"
 						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
