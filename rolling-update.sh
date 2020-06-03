@@ -15,4 +15,10 @@ then
 else
     #statements
     echo 'pods already deployed'
+    sh "~/bin/kubectl apply -f kubernetes.yml
+	sh "echo 'Restart Pod to Clear Cache'"
+	sh "~/bin/kubectl rollout status"
+	sh "echo 'Retrieving New Pod'"
+	podName = `kubectl get pods --field-selector status.phase=Running`
+    echo $podName
 fi
