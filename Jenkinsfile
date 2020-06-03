@@ -61,7 +61,7 @@ pipeline {
 				if (deploymentName.isEmpty()) {
 					sh "echo 'No deployments Found, Deploying Now'"
 					sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImageID`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
-					sh "~/bin/kubectl expose deployment $repoName --port=8000 --target-port=8090 --type=LoadBalancer"
+					sh "~/bin/kubectl expose deployment $repoName --port=8090 --target-port=8000 --type=LoadBalancer"
 					script {
 						sh "echo 'Getting deployment Name'"
 						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
