@@ -22,10 +22,10 @@ metadata:
 spec:
   replicas: 2
   strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 25%
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
   selector:
     matchLabels:
       app: helloworldapp
@@ -42,9 +42,9 @@ spec:
         - containerPort: 8000
         readinessProbe:
           httpGet:
-             path: /
-             port: 8000
-             initialDelaySeconds: 5
-             periodSeconds: 5
-             successThreshold: 1
+            path: /
+            port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
              
