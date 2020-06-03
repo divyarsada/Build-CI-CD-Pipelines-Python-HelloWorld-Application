@@ -68,7 +68,7 @@ pipeline {
 					}
 				} else {
 					sh "echo 'Application Already Deployed, Updating Image'"
-					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUILD_NUMBER`"
+					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImageID`:`echo $BUILD_NUMBER`"
 					sh "echo 'Restart deployment to Clear Cache'"
 					sh "~/bin/kubectl rollout status deployment/$repoName"
 					sh "echo 'Retrieving New Pod Name and Hash'"
