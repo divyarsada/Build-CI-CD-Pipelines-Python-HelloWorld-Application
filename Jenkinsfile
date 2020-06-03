@@ -49,29 +49,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh '''#!/bin/bash
-                    echo "$whoami"
-                    echo "$pwd"
-                    sh "cd /home/ec2-user/"
-                    echo "Hello from bash"
-                    echo "Who I'm $SHELL"
-                    echo 'Check if Pod has Previously been Deployed'
-                    podName=`kubectl get pods --field-selector status.phase=Running`
-                    echo $podName
-                    if [ -z "$podName" ]
-                    then
-                        echo 'No Pod Found, Deploying Now'
-                        input 'Deploy to Cluster?'
-                        milestone(1)
-                        kubernetesDeploy(
-                            kubeconfigId: 'kubeconfig',
-                            configs: 'kubernetes.yml',
-                            enableConfigSubstitution: true
-                        )
-                    else
-                        echo 'pods alreay deployed"
-                    fi
-                '''
+                sh './rolling-update.sh'
             }
             
         }
