@@ -56,21 +56,21 @@ pipeline {
 			script {
 				sh "echo 'Check if app has Previously been Deployed'"
 				script {
-					podName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
+					deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
 				}
-				if (podName.isEmpty()) {
-					sh "echo 'No Pod Found, Deploying Now'"
+				if (deploymentName.isEmpty()) {
+					sh "echo 'No deployments Found, Deploying Now'"
 					sh "~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
 					#sh "~/bin/kubectl run `echo $repoName` --image=`echo $dockerImage`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
 					script {
-						sh "echo 'Getting Pod Name and Hash'"
+						sh "echo 'Getting deployment Name'"
 						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
 					}
 				} else {
-					sh "echo 'Pod Already Deployed, Updating Image'"
-					sh "~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
-					sh "echo 'Restart Pod to Clear Cache'"
-					sh "~/bin/kubectl rollout restart deployment/$repoName"
+					sh "echo 'Application Already Deployed, Updating Image'"
+					sh "~/bin/kubectl set image deployment/`echo $repoName` `echo $repoName`=`echo $dockerImage`:`echo $BUID_NUMBER`"
+					sh "echo 'Restart deployment to Clear Cache'"
+					sh "~/bin/kubectl rollout status deployment/$repoName"
 					sh "echo 'Retrieving New Pod Name and Hash'"
 					script {
 						podName = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.name'", returnStdout: true).trim()
