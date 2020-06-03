@@ -17,9 +17,9 @@ else
     echo 'pods already deployed'
     echo "$image"
     ~/bin/kubectl apply -f "$WORKSPACE/kubernetes.yml"
-	echo 'Restart Pod to Clear Cache'
-	~/bin/kubectl rollout status
+	echo 'Rollout status'
+	~/bin/kubectl rollout status deployments/helloworld-deployment-rolling-update
 	echo 'Retrieving New Pod'
-	podName = `kubectl get pods --field-selector status.phase=Running`
+	podName = `kubectl get pods`
     echo $podName
 fi
