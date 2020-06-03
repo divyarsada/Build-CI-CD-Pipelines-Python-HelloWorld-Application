@@ -42,7 +42,6 @@ pipeline {
             script {
                 docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
                      dockerImage.push()
-                     dockerImage.push(latest)
                 }    
 			}
 		}
@@ -52,7 +51,7 @@ pipeline {
             steps {
                sh 'export KUBECONFIG=~/.kube/config'
             }
-     }
+    }
 	stage('Deploy Kubernetes Cluster') {
 		steps {
 			script {
