@@ -3,7 +3,6 @@ def clusterName = 'kops.cluster.kubernetes-aws.io'
 def dockerImageID = 'sampletest19/helloworldpipeline'
 def registry = "sampletest19/helloworldpipeline"
 def deploymentName = "helloworld-deployment-rolling-update"
-def serviceName = "helloworld-service"
 def podHash = ""
 def podName = ""
 def serviceAddress = ""
@@ -62,12 +61,15 @@ pipeline {
 				if (deploymentStatus.isEmpty()) {
 					sh "echo 'No deployments found, deploying now'"
 					sh "~/bin/kubectl run `echo $deploymentName` --image=`echo $dockerImageID`:`echo $BUILD_NUMBER` --replicas=2 --port=8000"
-					sh "~/bin/kubectl expose service $serviceName --port=8090 --target-port=8000 --type=LoadBalancer"
+					sh "echo Exposing the service on port 8090"
+					sh "~/bin/kubectl expose deployment $deploymentName --port=8090 --target-port=8000 --type=LoadBalancer"
 					script {
-						sh "echo 'Getting service name Name'"
-						deploymentName = sh(script: "~/bin/kubectl get deployments --output=json | jq -r '.items[0] | select(.metadata.labels.run == \"$repoName\").metadata.name'", returnStdout: true).trim()
+					    sh "echo 'Retrieving New Pod Name and Hash'"
+						podName = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.name'", returnStdout: true).trim()
+						podHash = sh(script: "~/bin/kubectl get pods --output=json | jq '[.items[] | select(.status.phase != \"Terminating\") ] | max_by(.metadata.creationTimestamp).metadata.labels.\"pod-template-hash\"'", returnStdout: true).trim()
+						serviceAddress = sh(script: "~/bin/kubectl get services --output=json | jq -r '.items[0] | .status.loadBalancer.ingress[0].hostname'", returnStdout: true).trim()
 					}
-					sh "echo 'Successfully created deployment $deploymentName and exposed the service $serviceName on port 8090'"
+					sh "echo 'Successfully created deployment $deploymentName and exposed as on URL: http://$serviceAddress:8090'"
 				} else {
 					sh "echo 'Application Already Deployed, updating the deployment applying Rolling update deployment strategy'"
 					sh "~/bin/kubectl set image deployment/`echo $deploymentName` `echo $deploymentName`=`echo $dockerImageID`:`echo $BUILD_NUMBER`"
